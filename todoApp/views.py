@@ -33,8 +33,8 @@ class Todos(APIView):
 
     #Todo 객체를 월, 일 사용자로 필터링하여 가져옴
     todos = Todo.objects.filter(
-      date_month = month,
-      date_day=day,
+      date__month=month,
+      date__day=day,
       user=user
     )
     serializer = TodoSerializer(
@@ -43,3 +43,13 @@ class Todos(APIView):
     )
     return Response(serializer.data)
   
+  def post(self, request, user_id):
+    serializer = TodoSerializer(data=request.data)
+    if serializer.is_valid():
+      user = self.get_user(user_id)
+      serializer.save(
+        user = user
+      )
+      return Response(serializer.data)
+    else:
+      return Response(serializer.errors)

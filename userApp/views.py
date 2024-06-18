@@ -11,9 +11,9 @@ class Register(APIView):
     #1. 사용자 요청으로 데이터 받음
     #2. 그 데이터로 Serializer 객체 만듬
     serializer = UserSerializer(data=request.data)
-        #3. 그 데이터 유효하면
+    #3. 그 데이터 유효하면
     if serializer.is_valid():
-          #4. 저장
+    #4. 저장
       serializer.save()
       return Response({
         "detail": "회원가입 요청이 성공적으로 처리되었습니다."

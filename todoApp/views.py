@@ -30,6 +30,8 @@ class Todos(APIView):
     day = int(day)
 
     user = self.get_user(user_id)
+
+    #Todo 객체를 월, 일 사용자로 필터링하여 가져옴
     todos = Todo.objects.filter(
       date_month = month,
       date_day=day,
@@ -39,5 +41,5 @@ class Todos(APIView):
       todos,
       many=True
     )
-    
     return Response(serializer.data)
+  

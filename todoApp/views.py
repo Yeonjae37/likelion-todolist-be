@@ -67,16 +67,16 @@ class TodoDetail(APIView):
     try: 
       todo = Todo.objects.get(user=user, id=todo_id)
     except Todo.DoesNotExist:
-      raise NotFound("투두를 찾을 수 없습니다.")
+      raise NotFound("To Do를 찾을 수 없습니다.")
     todo.delete()
-    return Response({"message": "투두가 성공적으로 삭제되었습니다."}, status=status.HTTP_204_NO_CONTENT)
+    return Response({"detail": "삭제 성공"}, status=status.HTTP_204_NO_CONTENT)
   
   def patch(self, request, user_id, todo_id):
     user = self.get_user(user_id)
     try:
       todo = Todo.objects.get(user=user, id=todo_id)
     except Todo.DoesNotExist:
-      raise NotFound("투두를 찾을 수 없습니다.")
+      raise NotFound("To Do를 찾을 수 없습니다.")
     serializer = TodoSerializer(todo, data=request.data, partial=True) #partial=True는 부분업데이트 지원!
     if serializer.is_valid():
       serializer.save()
@@ -97,7 +97,7 @@ class TodoDetailCheck(APIView):
     try:
       todo = Todo.objects.get(user=user, id=todo_id)
     except Todo.DoesNotExist:
-      raise NotFound("투두를 찾을 수 없습니다.")
+      raise NotFound("To Do를 찾을 수 없습니다.")
     todo.is_checked = True
     todo.save()
     serializer = TodoSerializer(todo)

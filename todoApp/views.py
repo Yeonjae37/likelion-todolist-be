@@ -70,4 +70,4 @@ class TodoDetail(APIView):
     except Todo.DoesNotExist:
       raise NotFound("투두를 찾을 수 없습니다.")
     todo.delete()
-    return Response(status=status.HTTP_204_NO_CONTENT)
+    return Response({"message": "투두가 성공적으로 삭제되었습니다."}, status=status.HTTP_204_NO_CONTENT)

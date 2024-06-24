@@ -6,6 +6,7 @@ from rest_framework.exceptions import NotFound
 from .models import Todo, User
 from .serializers import TodoSerializer
 from rest_framework import status
+import json
 
 class Todos(APIView):
 
@@ -93,13 +94,20 @@ class TodoDetailCheck(APIView):
     return user
   
   def patch(self, request, user_id, todo_id):
+    data = json.loads(request.body)
+    serializer = TodoSerializer(data=request.data)
     user = self.get_user(user_id)
     try:
       todo = Todo.objects.get(user=user, id=todo_id)
     except Todo.DoesNotExist:
       raise NotFound("To Do를 찾을 수 없습니다.")
-    todo.is_checked = True
-    todo.save()
+    check = data.get('is_checked')
+    if (check == True):
+      todo.is_checked = True
+      todo.save()
+    else:
+      todo.is_checked = False
+      todo.save()
     serializer = TodoSerializer(todo)
     return Response(serializer.data, status=status.HTTP_200_OK)
 

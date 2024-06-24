@@ -71,3 +71,18 @@ class TodoDetail(APIView):
       raise NotFound("투두를 찾을 수 없습니다.")
     todo.delete()
     return Response({"message": "투두가 성공적으로 삭제되었습니다."}, status=status.HTTP_204_NO_CONTENT)
+  
+  def patch(self, request, user_id, todo_id):
+    user = self.get_user(user_id)
+    try:
+      todo = Todo.objects.get(user=user, id=todo_id)
+    except Todo.DoesNotExist:
+      raise NotFound("투두를 찾을 수 없습니다.")
+    serializer = TodoSerializer(todo, data=request.data, partial=True) #partial=True는 부분업데이트 지원!
+    if serializer.is_valid():
+      serializer.save()
+      return Response(serializer.data)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+  # 모델에 없는 필드를 request body에 넣어서 줘도 정상적으로 수정 가능????
+
+# 클래스는 언제 나누는지

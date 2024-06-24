@@ -5,6 +5,7 @@ from rest_framework.response import Response
 from rest_framework.exceptions import NotFound
 from .models import Todo, User
 from .serializers import TodoSerializer
+from rest_framework import status
 
 # Create your views here.
 class Todos(APIView):
@@ -53,3 +54,20 @@ class Todos(APIView):
       return Response(serializer.data)
     else:
       return Response(serializer.errors)
+    
+class TodoDetail(APIView):
+  def get_user(self, user_id):
+    try:
+      user = User.objects.get(id=user_id)
+    except User.DoesNotExist:
+      raise NotFound("유저를 찾을 수 없습니다.")
+    return user
+    
+  def delete(self, request, user_id, todo_id):
+    user = self.get_user(user_id)
+    try: 
+      todo = Todo.objects.get(user=user, id=todo_id)
+    except Todo.DoesNotExist:
+      raise NotFound("투두를 찾을 수 없습니다.")
+    todo.delete()
+    return Response(status=status.HTTP_204_NO_CONTENT)

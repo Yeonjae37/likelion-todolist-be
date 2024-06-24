@@ -105,7 +105,7 @@ class TodoDetailCheck(APIView):
     if (check == True):
       todo.is_checked = True
       todo.save()
-    else:
+    elif (check == False):
       todo.is_checked = False
       todo.save()
     serializer = TodoSerializer(todo)

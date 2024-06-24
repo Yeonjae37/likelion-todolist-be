@@ -7,7 +7,6 @@ from .models import Todo, User
 from .serializers import TodoSerializer
 from rest_framework import status
 
-# Create your views here.
 class Todos(APIView):
 
   def get_user(self, user_id):
@@ -84,5 +83,24 @@ class TodoDetail(APIView):
       return Response(serializer.data)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
   # 모델에 없는 필드를 request body에 넣어서 줘도 정상적으로 수정 가능????
+
+class TodoDetailCheck(APIView):
+  def get_user(self, user_id):
+    try:
+      user = User.objects.get(id=user_id)
+    except User.DoesNotExist:
+      raise NotFound("유저를 찾을 수 없습니다.")
+    return user
+  
+  def patch(self, request, user_id, todo_id):
+    user = self.get_user(user_id)
+    try:
+      todo = Todo.objects.get(user=user, id=todo_id)
+    except Todo.DoesNotExist:
+      raise NotFound("투두를 찾을 수 없습니다.")
+    todo.is_checked = True
+    todo.save()
+    serializer = TodoSerializer(todo)
+    return Response(serializer.data, status=status.HTTP_200_OK)
 
 # 클래스는 언제 나누는지

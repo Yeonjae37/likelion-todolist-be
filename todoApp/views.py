@@ -83,32 +83,23 @@ class TodoDetail(APIView):
       serializer.save()
       return Response(serializer.data)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-  # 모델에 없는 필드를 request body에 넣어서 줘도 정상적으로 수정 가능????
 
 class TodoDetailCheck(APIView):
-  def get_user(self, user_id):
+  def get_todo(self, user_id, todo_id):
     try:
       user = User.objects.get(id=user_id)
     except User.DoesNotExist:
       raise NotFound("유저를 찾을 수 없습니다.")
-    return user
-  
-  def patch(self, request, user_id, todo_id):
-    data = json.loads(request.body)
-    serializer = TodoSerializer(data=request.data)
-    user = self.get_user(user_id)
     try:
       todo = Todo.objects.get(user=user, id=todo_id)
     except Todo.DoesNotExist:
       raise NotFound("To Do를 찾을 수 없습니다.")
-    check = data.get('is_checked')
-    if (check == True):
-      todo.is_checked = True
-      todo.save()
-    elif (check == False):
-      todo.is_checked = False
-      todo.save()
-    serializer = TodoSerializer(todo)
-    return Response(serializer.data, status=status.HTTP_200_OK)
-
-# 클래스는 언제 나누는지
+    return todo
+  
+  def patch(self, request, user_id, todo_id):
+    todo = self.get_todo(user_id, todo_id)
+    serializer = TodoSerializer(todo, data=request.data, partial = True)
+    if serializer.is_valid():
+      serializer.save()
+      return Response(serializer.data, status=status.HTTP_200_OK)
+    return Response(serializer.data, status=status.HTTP_400_BAD_REQUEST)

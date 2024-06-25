@@ -103,3 +103,23 @@ class TodoDetailCheck(APIView):
       serializer.save()
       return Response(serializer.data, status=status.HTTP_200_OK)
     return Response(serializer.data, status=status.HTTP_400_BAD_REQUEST)
+  
+class TodoReview(APIView):
+  def get_todo(self, user_id, todo_id):
+    try:
+      user = User.objects.get(id=user_id)
+    except User.DoesNotExist:
+      raise NotFound("유저를 찾을 수 없습니다.")
+    try:
+      todo = Todo.objects.get(user=user, id=todo_id)
+    except Todo.DoesNotExist:
+      raise NotFound("To Do를 찾을 수 없습니다.")
+    return todo
+  
+  def patch(self, request, user_id, todo_id):
+    todo = self.get_todo(user_id, todo_id)
+    serializer = TodoSerializer(todo, data=request.data, partial = True)
+    if serializer.is_valid():
+      serializer.save()
+      return Response(serializer.data, status=status.HTTP_200_OK)
+    return Response(serializer.data, status=status.HTTP_400_BAD_REQUEST)

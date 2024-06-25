@@ -40,7 +40,6 @@ INSTALLED_APPS = [
     'rest_framework',
     'todoApp',
     'userApp',
-    'reviewApp',
     'corsheaders',
 ]
 
